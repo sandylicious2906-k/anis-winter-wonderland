@@ -1,0 +1,1652 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anis Winter Wonderland</title>
+    
+    <!-- Edle Schriftarten -->
+    <link href="https://fonts.googleapis.com/css2?family=Parisienne&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Above+the+Beyond+Script&display=swap" rel="stylesheet">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Playfair Display', serif;
+            /* Girly Winter-Nachthimmel mit leichtem Pink-Glow */
+            background: radial-gradient(circle at top, rgba(249,168,212,0.35) 0%, transparent 45%),
+                        linear-gradient(to bottom,
+                            #020617 0%,
+                            #0f172a 35%,
+                            #1e293b 70%,
+                            #f9a8d4 100%
+                        );
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: #fff;
+            position: relative;
+        }
+
+        /* --- WINTER WONDERLAND BODEN --- */
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            height: 180px;
+            background: linear-gradient(to top, #e2e8f0 0%, #f8fafc 100%);
+            border-radius: 100% 100% 0 0 / 40% 40% 0 0;
+            transform: scaleX(1.5);
+            z-index: 1;
+            box-shadow: 0 -10px 40px rgba(255, 255, 255, 0.3);
+            pointer-events: none;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            bottom: 40px; left: -20%; right: -20%;
+            height: 220px;
+            background: linear-gradient(to top, #cbd5e1 0%, #e2e8f0 100%);
+            border-radius: 100% 100% 0 0 / 50% 50% 0 0;
+            opacity: 0.8;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Sterne */
+        .stars {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image:
+                radial-gradient(1px 1px at 10% 10%, white, transparent),
+                radial-gradient(1px 1px at 20% 40%, white, transparent),
+                radial-gradient(2px 2px at 40% 20%, white, transparent),
+                radial-gradient(1px 1px at 70% 60%, white, transparent),
+                radial-gradient(2px 2px at 80% 10%, white, transparent),
+                radial-gradient(1px 1px at 90% 80%, white, transparent);
+            background-size: 400px 400px;
+            opacity: 0.6;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Canvas für realistischen Schnee – VOR den Türen */
+        #snowCanvas {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 15;        /* > Container (10), < Schneemann (60) & Sternschnuppe (70) */
+            pointer-events: none;
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px 220px;
+        }
+
+        /* ÜBERSCHRIFT */
+        h1 {
+            text-align: center;
+            font-family: 'Parisienne', cursive;
+            font-size: clamp(4rem, 10vw, 6.5rem);
+            color: #fbcfe8;
+            text-shadow:
+                0 0 4px rgba(255, 182, 193, 0.35),
+                0 0 10px rgba(240, 149, 170, 0.25);
+            margin-bottom: 5px;
+            font-weight: 400;
+            line-height: 1.2;
+            padding-top: 20px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #fecaca;
+            margin-bottom: 50px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+            gap: 50px 30px;
+            perspective: 1500px;
+        }
+
+        /* TÜR-Rahmen */
+        .door-wrapper {
+            position: relative; aspect-ratio: 0.7;
+            background: radial-gradient(circle at 20% 0%, #4c1d95 0%, #111827 40%, #020617 100%);
+            border-radius: 8px;
+            box-shadow:
+                0 22px 45px rgba(0,0,0,0.9),
+                0 0 0 1px rgba(255,255,255,0.08);
+            border: 3px solid rgba(148,163,184,0.6);
+            border-bottom-width: 6px;
+            overflow: visible;
+        }
+
+        /* Girlande über der Tür */
+        .garland {
+            position: absolute;
+            top: -14px; left: -14px; right: -14px;
+            height: 36px;
+            background:
+                radial-gradient(circle at 0 35px, transparent 0, transparent 16px, #14532d 20px, #166534 24px, transparent 30px),
+                radial-gradient(circle at 25% 35px, transparent 0, transparent 16px, #14532d 20px, #166534 24px, transparent 30px),
+                radial-gradient(circle at 50% 35px, transparent 0, transparent 16px, #14532d 20px, #166534 24px, transparent 30px),
+                radial-gradient(circle at 75% 35px, transparent 0, transparent 16px, #14532d 20px, #166534 24px, transparent 30px),
+                radial-gradient(circle at 100% 35px, transparent 0, transparent 16px, #14532d 20px, #166534 24px, transparent 30px);
+            filter: drop-shadow(0 6px 8px rgba(0,0,0,0.6));
+            opacity: 0.95;
+            pointer-events: none;
+        }
+
+        /* Lichterkette */
+        .fairy-lights {
+            position: absolute; top: -10px; left: -12px; right: -12px; height: 30px;
+            display: flex; justify-content: space-between; align-items: flex-end;
+            pointer-events: none; z-index: 20;
+        }
+        .wire {
+            position: absolute; top: 6px; left: 0; right: 0; height: 24px;
+            border-top: 2px solid rgba(15,23,42,0.9);
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.8);
+            z-index: 1;
+        }
+        .light {
+            position: relative;
+            width: 12px; height: 20px;
+            border-radius: 50% 50% 60% 60%;
+            margin: 10px 4px 0 4px;
+            background: radial-gradient(circle at 30% 20%, #fff, currentColor 55%, #111827 100%);
+            box-shadow:
+                0 0 14px currentColor,
+                0 0 2px rgba(15,23,42,0.7);
+            opacity: 0.9;
+            animation: glow 3s infinite alternate ease-in-out;
+        }
+        .light::before {
+            content: '';
+            position: absolute;
+            top: -5px; left: 2px; right: 2px;
+            height: 5px;
+            background: #020617;
+            border-radius: 2px 2px 0 0;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.8);
+        }
+        .light:nth-child(odd) { animation-duration: 2.4s; }
+        .light:nth-child(even) { animation-duration: 3.2s; }
+        @keyframes glow {
+            0% { opacity: 0.55; box-shadow: 0 0 4px currentColor; }
+            100% { opacity: 1; box-shadow: 0 0 18px currentColor; }
+        }
+
+        .mistletoe {
+            position: absolute; top: -32px; left: 50%; transform: translateX(-50%);
+            width: 58px; height: 46px; z-index: 25; 
+            filter: drop-shadow(0 6px 6px rgba(0,0,0,0.7));
+        }
+
+        .mist-leaf { position: absolute; width: 20px; height: 12px; background: linear-gradient(to right,#14532d,#22c55e); border-radius: 22px 0 22px 0; }
+        .mist-leaf.l { transform: rotate(-45deg); left: 6px; top: 12px; }
+        .mist-leaf.r { transform: rotate(45deg); right: 6px; top: 12px; border-radius: 0 22px 0 22px; }
+        .mist-berry {
+            position: absolute; bottom: 8px; left: 50%; width: 9px; height: 9px;
+            background: #fef9c3; border-radius: 50%; transform: translateX(-50%);
+            box-shadow: 0 0 6px rgba(254,249,195,0.9);
+        }
+
+        /* Tür-Blatt */
+        .door-leaf {
+            position: absolute; inset: 4px;
+            transform-origin: left center;
+            transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+            transform-style: preserve-3d; cursor: pointer; z-index: 10;
+            border-radius: 6px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            box-shadow:
+                inset 0 0 0 1px rgba(255,255,255,0.18),
+                6px 0 16px rgba(0,0,0,0.85);
+            overflow: hidden;
+        }
+
+        /* Holz-/Lack-Textur */
+        .door-leaf::before {
+            content: ''; position: absolute; inset: 0;
+            background-image: 
+                repeating-linear-gradient(90deg, rgba(0,0,0,0.14) 0, rgba(0,0,0,0.14) 1px, transparent 1px, transparent 4px),
+                linear-gradient(to bottom, rgba(255,255,255,0.15), transparent 40%, rgba(0,0,0,0.25));
+            mix-blend-mode: soft-light;
+            pointer-events: none;
+            opacity: 0.9;
+        }
+
+        /* Tür-Farbvarianten – GIRLY PALETTE */
+        .door-variant-0 { background: linear-gradient(145deg,#be123c,#7f1d1d); }
+        .door-variant-1 { background: linear-gradient(145deg,#9d174d,#4a044e); }
+        .door-variant-2 { background: linear-gradient(145deg,#ec4899,#9d174d); }
+        .door-variant-3 { background: linear-gradient(145deg,#7e22ce,#4c1d95); }
+        .door-variant-4 { background: linear-gradient(145deg,#fb7185,#b91c1c); }
+
+        /* Inhalt */
+        .door-content-wrapper {
+            position: absolute; inset: 8px;
+            background: radial-gradient(circle at 30% 0%, #fda4af 0%, #4b103a 35%, #0b0210 100%);
+            display: flex; align-items: center; justify-content: center;
+            text-align:	center; padding: 18px; overflow: hidden;
+            box-shadow:
+                inset 0 0 45px rgba(0,0,0,1),
+                0 0 20px rgba(15,23,42,0.9);
+            border-radius: 6px;
+        }
+        .door-content {
+            width: 100%;
+        }
+        .door-content p { 
+            color: #fee2e2;
+            font-size: 1.05rem; line-height: 1.5;
+            text-shadow: 0 2px 4px black;
+            margin-bottom: 0.4rem;
+        }
+
+        .door-content a {
+            color: #f9a8d4;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+        .door-content a:hover {
+            text-decoration-thickness: 2px;
+        }
+
+        /* Bild-Geschenke */
+        .door-content img.door-gift {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.7);
+            object-fit: cover;
+        }
+
+        /* Weihnachts-Rahmen für QR-Codes */
+        .qr-card {
+            background: radial-gradient(circle at top, #fef3c7, #fee2e2);
+            padding: 14px 10px 10px;
+            border-radius: 16px;
+            box-shadow:
+                0 10px 25px rgba(15,23,42,0.8),
+                0 0 18px rgba(244,114,182,0.6);
+            border: 2px solid rgba(248,250,252,0.7);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .qr-card::before {
+            content: "🎄";
+            position: absolute;
+            top: 6px;
+            left: 10px;
+            font-size: 1.2rem;
+        }
+
+        .qr-card::after {
+            content: "✨";
+            position: absolute;
+            top: 6px;
+            right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .qr-image {
+            width: 80%;
+            max-width: 220px;
+            display: block;
+            margin: 6px auto 4px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(15,23,42,0.6);
+        }
+
+        .qr-caption {
+            font-size: 0.85rem;
+            color: #7f1d1d;
+            text-align: center;
+            margin-top: 4px;
+            font-weight: 600;
+        }
+
+        .number-tag {
+            font-family: 'Times New Roman', serif;
+            font-weight: bold;
+            font-size: 4.5rem;
+            background: linear-gradient(to bottom, #fef9c3 0%, #fbbf24 40%, #b45309 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            filter:
+                drop-shadow(0 3px 3px rgba(0,0,0,0.85))
+                drop-shadow(0 0 10px rgba(250,204,21,0.4));
+            z-index: 5;
+            margin-bottom: 10px;
+        }
+
+        /* Goldene Zeichnungen auf den Türen */
+        .door-drawing {
+            width: 75%; height: 75%;
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0.45; z-index: 1;
+        }
+        .door-drawing path {
+            fill: none;
+            stroke: #facc15;
+            stroke-width: 2;
+            stroke-linecap: round; stroke-linejoin: round;
+            filter:
+                drop-shadow(0 1px 0 rgba(255,255,255,0.2))
+                drop-shadow(0 -1px 0 rgba(0,0,0,0.7));
+        }
+
+        .knob {
+            position: absolute; right: 14px; top: 50%;
+            width: 13px; height: 13px;
+            background: radial-gradient(circle at 30% 30%, #fff, #facc15 45%, #b45309 100%);
+            border-radius: 50%;
+            box-shadow:
+                0 4px 7px rgba(0,0,0,0.9),
+                0 0 4px rgba(250,204,21,0.6);
+            z-index: 10;
+        }
+
+        .door-wrapper.opened .door-leaf { transform: rotateY(-105deg); }
+        .door-wrapper.locked { filter: brightness(0.78); }
+        .door-wrapper.locked .door-leaf { cursor: not-allowed; }
+        .shaking .door-leaf { animation: shake 0.4s ease-in-out; }
+        @keyframes shake { 0%, 100% {transform:translateX(0);} 25% {transform:translateX(4px);} 75% {transform:translateX(-4px);} }
+
+        /* Schneemann Animation Layer */
+        #animation-layer {
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 100%;
+            z-index: 50; pointer-events: none; overflow: hidden;
+        }
+
+        .walker {
+            position: fixed; bottom: 28px; left: -150px;
+            width: 130px; height: 190px;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.65));
+            pointer-events: auto; cursor: pointer; transition: transform 0.2s;
+            z-index: 60;
+        }
+        .walker:hover { transform: scale(1.04); }
+
+        @keyframes walk-across {
+            0% { transform: translateX(-220px) rotate(0deg); }
+            20% { transform: translateX(20vw) rotate(1deg); }
+            40% { transform: translateX(40vw) rotate(-1deg); }
+            60% { transform: translateX(60vw) rotate(0.8deg); }
+            80% { transform: translateX(80vw) rotate(-0.8deg); }
+            100% { transform: translateX(110vw) rotate(0deg); }
+        }
+
+        .snowman-speech {
+            position: absolute; top: -90px; left: 50%;
+            transform: translateX(-50%) scale(0);
+            background: #fee2e2;
+            color: #9f1239;
+            padding: 12px 18px;
+            border-radius: 18px;
+            border: 2px solid #fecaca;
+            font-family: 'Playfair Display', serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            width: 230px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(248,113,113,0.4);
+            pointer-events: none;
+            opacity: 0; transition: all 0.3s; z-index: 100;
+        }
+        .snowman-speech::after {
+            content: '';
+            position: absolute; bottom: -8px; left: 50%;
+            transform: translateX(-50%);
+            border-width: 8px 8px 0;
+            border-style: solid;
+            border-color: #fee2e2 transparent transparent;
+        }
+
+        .walker.talking .snowman-speech { transform: translateX(-50%) scale(1); opacity: 1; }
+
+        /* Schneemann Fake-3D */
+        .s-shadow {
+            position: absolute; bottom: 14px; left: 22px;
+            width: 86px; height: 20px;
+            background: radial-gradient(circle, rgba(15,23,42,0.85), transparent 70%);
+            filter: blur(2px);
+            opacity: 0.75;
+        }
+
+        .s-body-btm {
+            position: absolute; bottom: 24px; left: 22px;
+            width: 86px; height: 76px;
+            background:
+                radial-gradient(circle at 30% 25%, #ffffff 0%, #e5e7eb 40%, #cbd5e1 70%, #94a3b8 100%);
+            border-radius: 50%;
+            box-shadow:
+                inset 8px 10px 18px rgba(255,255,255,0.9),
+                inset -8px -10px 18px rgba(15,23,42,0.5),
+                0 8px 12px rgba(15,23,42,0.5);
+        }
+        .s-body-mid {
+            position: absolute; bottom: 78px; left: 30px;
+            width: 70px; height: 60px;
+            background:
+                radial-gradient(circle at 30% 25%, #ffffff 0%, #e5e7eb 40%, #cbd5e1 70%, #94a3b8 100%);
+            border-radius: 50%;
+            box-shadow:
+                inset 6px 8px 14px rgba(255,255,255,0.9),
+                inset -7px -9px 15px rgba(15,23,42,0.45),
+                0 6px 10px rgba(15,23,42,0.55);
+            z-index: 2;
+        }
+        .s-body-top {
+            position: absolute; bottom: 122px; left: 38px;
+            width: 54px; height: 48px;
+            background:
+                radial-gradient(circle at 30% 25%, #ffffff 0%, #e5e7eb 45%, #cbd5e1 75%, #94a3b8 100%);
+            border-radius: 50%;
+            box-shadow:
+                inset 4px 6px 10px rgba(255,255,255,0.95),
+                inset -5px -7px 10px rgba(15,23,42,0.4),
+                0 5px 8px rgba(15,23,42,0.55);
+            z-index: 3;
+        }
+
+        .s-namechain {
+            position: absolute;
+            bottom: 104px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 3px 8px;
+            font-size: 0.7rem;
+            background: rgba(0,0,0,0.65);
+            border-radius: 10px;
+            color: #fff;
+            font-family: 'Playfair Display', serif;
+            letter-spacing: 1px;
+            border: 1px solid rgba(255,255,255,0.25);
+            box-shadow: 0 0 5px rgba(255,255,255,0.4);
+            z-index: 12;
+        }
+
+        .s-eye {
+            position: absolute; width: 5px; height: 5px;
+            background: radial-gradient(circle at 30% 30%, #ffffff, #020617 80%);
+            border-radius: 50%;
+            top: 15px;
+            box-shadow: 0 0 4px rgba(0,0,0,0.7);
+        }
+        .s-eye.l { left: 14px; }
+        .s-eye.r { left: 30px; }
+
+        .s-nose {
+            position: absolute; top: 22px; left: 22px;
+            width: 0; height: 0;
+            border-left: 15px solid #f97316;
+            border-top: 4px solid transparent;
+            border-bottom: 4px solid transparent;
+            transform: rotate(-8deg);
+            filter:
+                drop-shadow(1px 1px 2px rgba(0,0,0,0.6))
+                drop-shadow(0 0 3px rgba(248,250,252,0.6));
+        }
+
+        /* Schal & Mütze */
+        .s-scarf {
+            position: absolute; bottom: 114px; left: 34px;
+            width: 62px; height: 14px;
+            background: linear-gradient(90deg,#ec4899,#fb7185,#f97316);
+            border-radius: 999px;
+            box-shadow:
+                0 3px 6px rgba(0,0,0,0.6),
+                inset 0 0 4px rgba(255,255,255,0.6);
+            z-index: 4;
+        }
+        .s-scarf-end {
+            position: absolute; bottom: 100px; left: 42px;
+            width: 14px; height: 26px;
+            background: linear-gradient(180deg,#ec4899,#fb7185,#f97316);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.6);
+            z-index: 3;
+        }
+        .s-scarf-end::after {
+            content: '';
+            position: absolute; bottom: 3px; left: 2px; right: 2px;
+            height: 3px;
+            background: rgba(248,250,252,0.7);
+            border-radius: 999px;
+            opacity: 0.7;
+        }
+
+        .s-hat-band {
+            position: absolute; bottom: 154px; left: 32px;
+            width: 60px; height: 18px;
+            background: #020617;
+            border-radius: 999px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.7);
+            z-index: 4;
+        }
+        .s-hat-top {
+            position: absolute; bottom: 166px; left: 40px;
+            width: 44px; height: 26px;
+            background: linear-gradient(145deg,#ec4899,#4c1d95);
+            border-radius: 14px 14px 10px 10px;
+            box-shadow:
+                inset 4px 4px 8px rgba(255,255,255,0.4),
+                0 4px 8px rgba(0,0,0,0.8);
+            z-index: 4;
+        }
+        .s-hat-top::after {
+            content: '';
+            position: absolute; top: 4px; left: 10px; right: 10px;
+            height: 6px;
+            border-radius: 999px;
+            background: rgba(248,250,252,0.5);
+            opacity: 0.8;
+        }
+
+        .s-arm {
+            position: absolute; height: 4px; background: #451a03; border-radius: 2px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.7);
+        }
+        .s-arm.l { width: 38px; bottom: 102px; left: -2px; transform: rotate(18deg); transform-origin: right center; }
+        .s-arm.r { width: 42px; bottom: 102px; right: 18px; transform: rotate(-8deg); transform-origin: left center; animation: drink-arm 1s infinite alternate; }
+        @keyframes drink-arm { from { transform: rotate(-10deg); } to { transform: rotate(8deg); } }
+
+        .beer-mug {
+            position: absolute; right: -20px; top: -15px;
+            width: 26px; height: 34px;
+            background: linear-gradient(145deg,rgba(248,250,252,0.9),rgba(148,163,184,0.7));
+            border-radius: 4px;
+            box-shadow:
+                inset 0 0 4px rgba(15,23,42,0.6),
+                0 4px 8px rgba(0,0,0,0.6);
+        }
+        .beer-liquid {
+            position: absolute; bottom: 2px; left: 3px;
+            width: calc(100% - 6px); height: 80%;
+            background: linear-gradient(to top,#fbbf24,#facc15);
+            opacity: 0.95;
+            box-shadow: inset 0 0 3px rgba(180,83,9,0.8);
+        }
+        .beer-foam {
+            position: absolute; top: -7px; left: -4px;
+            width: 135%; height: 14px;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow:
+                0 2px 3px rgba(148,163,184,0.8),
+                0 0 6px rgba(255,255,255,0.8);
+        }
+        .beer-handle {
+            position: absolute; right: -9px; top: 8px;
+            width: 10px; height: 18px;
+            border: 3px solid rgba(248,250,252,0.9);
+            border-left: none;
+            border-radius: 0 8px 8px 0;
+            box-shadow: 0 2px 3px rgba(0,0,0,0.8);
+        }
+
+        /* Button für Sternschnuppe */
+        .shooting-trigger {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            border-radius: 999px;
+            border: 1px solid #f9a8d4;
+            padding: 0.45rem 1rem;
+            background: rgba(15,23,42,0.7);
+            color: #fee2e2;
+            font-family: inherit;
+            font-size: 0.95rem;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(15,23,42,0.8);
+        }
+        .shooting-trigger span {
+            font-size: 1.2rem;
+        }
+        .shooting-trigger:hover {
+            background: rgba(24,35,58,0.9);
+        }
+
+        /* Sternschnuppe */
+        #shootingStar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 260px;
+            pointer-events: none;
+            opacity: 0;
+            z-index: 70;
+        }
+
+        #shootingStar.active {
+            animation: shooting 2.8s ease-out forwards;
+        }
+
+        .star-icon {
+            font-size: 80px;
+            text-align: center;
+            text-shadow:
+                0 0 10px rgba(250,250,255,0.9),
+                0 0 30px rgba(244,114,182,0.8),
+                0 0 60px rgba(244,114,182,0.7);
+            color: #fef9c3;
+            position: relative;
+        }
+
+        .star-icon::after {
+            content: '';
+            position: absolute;
+            top: 40px;
+            left: -220px;
+            width: 260px;
+            height: 6px;
+            background: linear-gradient(to right,
+                rgba(248,250,252,0),
+                rgba(244,114,182,0.7),
+                rgba(250,250,255,0)
+            );
+            filter: blur(3px);
+        }
+
+        .wish-text {
+            margin-top: 6px;
+            text-align: center;
+            font-size: 1rem;
+            color: #fee2e2;
+            text-shadow: 0 0 10px rgba(15,23,42,0.9);
+        }
+
+        @keyframes shooting {
+            0% {
+                opacity: 0;
+                transform: translate(-20vw, -20vh) rotate(0deg);
+            }
+            10% {
+                opacity: 1;
+            }
+            70% {
+                opacity: 1;
+                transform: translate(60vw, 40vh) rotate(8deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(110vw, 60vh) rotate(12deg);
+            }
+        }
+
+        /* Brief-Overlay für Tür 1 */
+        #letterOverlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15,23,42,0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 80;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        #letterOverlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Postkarten-Box */
+        .letter-box {
+            max-width: 850px;
+            margin: 0 16px;
+            color: #1f2933;
+            padding: 60px 32px 32px;
+            border-radius: 24px;
+            box-shadow: 0 24px 70px rgba(0,0,0,0.75);
+            position: relative;
+            border: 1px solid rgba(248, 187, 208, 0.9);
+
+            /* Papierstruktur */
+            background:
+                radial-gradient(circle at top, #fff7ed 0%, #ffe4ea 45%, #fde7ef 100%),
+                repeating-linear-gradient(
+                    45deg,
+                    rgba(255,255,255,0.45) 0px,
+                    rgba(255,255,255,0.45) 2px,
+                    rgba(248,187,208,0.22) 3px,
+                    rgba(248,187,208,0.22) 4px
+                );
+            background-blend-mode: screen, multiply;
+
+            display: flex;
+            flex-direction: row;
+            gap: 30px;
+        }
+        /* Schleife oben auf der Karte */
+        .letter-ribbon {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 260px;
+            height: 38px;
+            background: linear-gradient(90deg, #7f1d1d, #dc2626, #b91c1c);
+            border-radius: 999px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.55);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fee2e2;
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            font-size: 0.8rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            z-index: 5;
+        }
+
+        .letter-ribbon::before,
+        .letter-ribbon::after {
+            content: "";
+            position: absolute;
+            bottom: -14px;
+            width: 0;
+            height: 0;
+            border-style: solid;
+        }
+
+        .letter-ribbon::before {
+            left: 16px;
+            border-width: 14px 10px 0 0;
+            border-color: #7f1d1d transparent transparent transparent;
+        }
+
+        .letter-ribbon::after {
+            right: 16px;
+            border-width: 14px 0 0 10px;
+            border-color: #7f1d1d transparent transparent transparent;
+        }
+
+        /* Weihnachts-Poststempel */
+        .letter-stamp {
+            position: absolute;
+            top: 18px;
+            right: 26px;
+            width: 90px;
+            height: 70px;
+            border-radius: 10px;
+            border: 2px solid rgba(148,27,45,0.8);
+            background: rgba(255,248,248,0.9);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.35);
+            transform: rotate(8deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .letter-stamp::before {
+            /* Briefmarken-Zackennrand */
+            content: "";
+            position: absolute;
+            inset: 3px;
+            border-radius: 6px;
+            border: 1px dashed rgba(148,27,45,0.6);
+        }
+
+        .stamp-inner {
+            position: relative;
+            text-align: center;
+            font-family: 'Playfair Display', serif;
+            font-size: 0.55rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: #7f1d1d;
+            z-index: 2;
+        }
+
+        .stamp-inner span {
+            display: block;
+        }
+
+        .stamp-inner span:first-child {
+            font-weight: 700;
+        }
+
+        .stamp-inner span:last-child {
+            font-size: 0.6rem;
+        }
+
+        /* kleiner Schneeflocken-Icon im Stempel */
+        .stamp-inner::after {
+            content: "❄";
+            display: block;
+            margin-top: 4px;
+            font-size: 0.9rem;
+        }
+
+        /* Bild links */
+        .letter-photo {
+            width: 45%;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .letter-photo img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Text rechts */
+        .letter-text {
+            width: 55%;
+        }
+
+        /* Überschrift im Brief */
+        .letter-box h2 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            font-size: 2rem;
+            margin: 12px 0 12px;
+            color: #c02f6d;
+        }
+
+        /* Fließtext im Brief */
+        .letter-box p {
+            font-family: 'Playfair Display', serif;
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 0.6rem;
+        }
+
+        /* X-Button */
+        .letter-close {
+            position: absolute;
+            top: 10px;
+            right: 14px;
+            border: none;
+            background: transparent;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: #c02f6d;
+        }
+
+        /* Unterschrift */
+        .letter-sign {
+            margin-top: 8px;
+            font-style: italic;
+            text-align: right;
+        }
+
+        /* Door-Link Button */
+        .door-link {
+            font-size: 1.1rem;
+            color: #7a003f;
+            font-weight: 700;
+            text-decoration: none;
+            padding: 8px 12px;
+            background: #ffd9e6;
+            border-radius: 8px;
+            display: inline-block;
+            margin-top: 10px;
+            box-shadow: 0 0 12px rgba(255, 0, 120, 0.4);
+            transition: 0.2s;
+        }
+
+        .door-link:hover {
+            background: #ffc1d8;
+            box-shadow: 0 0 16px rgba(255, 0, 150, 0.5);
+            color: #5a0030;
+        }
+
+        /* Responsive Kleinigkeiten */
+        @media (max-width: 750px) {
+            .letter-box {
+                flex-direction: column;
+                align-items: center;
+                padding: 70px 18px 24px;
+            }
+
+            .letter-photo,
+            .letter-text {
+                width: 100%;
+            }
+
+            .letter-text h2 {
+                font-size: 1.6rem;
+            }
+
+            .letter-box p {
+                font-size: 0.95rem;
+            }
+
+            .letter-ribbon {
+                width: 220px;
+                font-size: 0.7rem;
+            }
+
+            .letter-stamp {
+                top: 14px;
+                right: 14px;
+                width: 75px;
+                height: 60px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .calendar-grid {
+                gap: 30px 20px;
+            }
+
+            .door-content p {
+                font-size: 0.95rem;
+            }
+
+            .snowman-speech {
+                width: 210px;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="stars"></div>
+    <canvas id="snowCanvas"></canvas>
+
+    <div class="container">
+        <h1>Adventskalender</h1>
+        <p class="subtitle">Anis Winter Wonderland</p>
+
+        <!-- Test-Schalter -->
+        <div style="text-align:center; margin-bottom:20px; opacity:0.6; font-size:0.8rem;">
+    <!-- Verstecktes Checkbox-Element (wird im JS benutzt) -->
+    <input type="checkbox" id="previewToggle" style="display:none">
+
+    <!-- Kleiner Admin-Button nur für dich -->
+    <button type="button"
+            onclick="enableTestMode()"
+            style="background:transparent; border:none; color:#9ca3af; cursor:pointer; font-size:0.8rem;">
+        Admin-Modus
+    </button>
+</div>
+
+
+        <div class="calendar-grid" id="calendar"></div>
+    </div>
+
+    <div id="animation-layer"></div>
+
+    <!-- Sternschnuppe -->
+    <div id="shootingStar">
+        <div class="star-icon">✦</div>
+        <div class="wish-text">Wünsch dir was ✨</div>
+    </div>
+
+    <!-- Brief-Overlay für Tür 1 -->
+    <div id="letterOverlay">
+        <div class="letter-box">
+            <button class="letter-close" type="button" onclick="closeLetterOverlay()">✕</button>
+
+            <div class="letter-ribbon">Mit Weihnachtsliebe 🎀</div>
+
+            <div class="letter-stamp">
+                <div class="stamp-inner">
+                    <span>North Pole</span>
+                    <span>Express</span>
+                </div>
+            </div>
+
+            <div class="letter-photo">
+                <img src="ani_sandy_card.png" alt="Weihnachtsfoto">
+            </div>
+
+            <div class="letter-text">
+                <h2>Hallo Lieblings-Mensch 💌</h2>
+
+                <p>Wenn du das hier liest, geht offiziell der Weihnachtsspaß los. Ich habe dir deinen eigenen persönlichen digitalen Adventskalender gebastelt und hoffe sehr, dass er dir gefällt.</p>
+
+                <p>Täglich darfst du hierhin wiederkommen &amp; ein neues Türchen öffnen. Hinter jeder Tür verbirgt sich eine Überraschung, die dir hoffentlich ein Lächeln ins Gesicht zaubert.</p>
+
+                <p>Jetzt will ich gar nicht so viel schreiben und emotional werden. Gleich bekommst du auch schon dein erstes Geschenk und ich bin soooo gespannt, was du sagst!!</p>
+
+                <p>Du bist mein sicherer Hafen, mein Kummerkasten, meine Aufmunterung und der Mensch, für den ich scheiß Köln nicht verlassen würde.</p>
+
+                <p class="letter-sign">
+                    Auf eine wunderschöne und besinnliche Weihnachtszeit<br>
+                    love u ganz ganz doll, Deine Sandy ❤️
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+/* ---------------------------------------------------
+   LocalStorage Funktionen für geöffnete Türchen
+--------------------------------------------------- */
+function getOpenedDoors() {
+  try {
+    return JSON.parse(localStorage.getItem('openedDoors') || '[]');
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveDoorState(day) {
+  // NEU: Im Testmodus NICHT speichern
+  if (previewToggle && previewToggle.checked) return;
+
+  const opened = getOpenedDoors();
+  if (!opened.includes(day)) {
+    opened.push(day);
+    localStorage.setItem('openedDoors', JSON.stringify(opened));
+  }
+}
+
+// SVG Zeichnungen
+const drawings = {
+  tree: "M50 10 L30 80 H70 Z M45 80 V95 H55 V80",
+  bauble: "M50 20 A30 30 0 1 1 50 80 A30 30 0 1 1 50 20 M45 15 H55 V20 H45 Z",
+  bell: "M50 20 Q20 20 20 70 H80 Q80 20 50 20 M50 70 V80",
+  star: "M50 10 L61 35 L88 39 L68 57 L73 84 L50 72 L27 84 L32 57 L12 39 L39 35 Z",
+  snowflake: "M50 10 V90 M10 50 H90 M20 20 L80 80 M20 80 L80 20",
+  gift: "M25 40 H75 V85 H25 Z M50 40 V85 M25 60 H75 M40 40 L40 25 Q40 10 50 25 Q60 10 60 25 L60 40",
+  candy: "M40 85 V35 A15 15 0 0 1 70 35 V45"
+};
+const drawingKeys = Object.keys(drawings);
+
+// Fallback-Texte
+const doorFallback = {};
+for (let i = 1; i <= 24; i++) {
+  doorFallback[i] = "Eine kleine Überraschung ✨";
+}
+doorFallback[1] = "Ich hab da mal ein Mixtape für dich erstellt.";
+doorFallback[24] = "Frohe Weihnachten! ❤️";
+
+// Komplimente für Schneemann
+const compliments = [
+  "Official Christmas Queen heute: DU 👑✨",
+  "Glitzer an, Stress aus.✨",
+  "Du bist das Highlight in jedem Winter Wonderland.",
+  "Mit dir schmeckt jeder Punsch besser. 🍷",
+  "Mehr Glow als der Tannenbaum. 💡",
+  "Du wärmst mehr als Hot Chocolate. ☕️",
+  "Du bist mein liebster Mensch im Dezember. 🎄",
+  "Selfcare? Heute Pflicht! 😌",
+  "Ich bin froh, dass es dich gibt. ❤️",
+  "Cheers, Christmas Babe! 🥂",
+  "Du bist stabiler als mein WLAN im Winter.",
+  "Du bist mein Lieblings-Mensch im ganzen Weihnachtschaos.",
+  "Ohne dich wäre Dezember nur kalt und dunkel.",
+  "Du bist mein persönlicher Weihnachtszauber.",
+  "Mit dir fühlt sich jeder Tag nach Feiertag an.",
+  "Du bist die Schleife auf meinem Geschenk des Lebens. 🎁"
+];
+
+const calendarEl = document.getElementById('calendar');
+const previewToggle = document.getElementById('previewToggle');
+// Admin-Code für den Testmodus
+const ADMIN_CODE = "Boss"; // ändere das zu einem Code, den nur DU kennst
+
+function enableTestMode() {
+  if (!previewToggle) return;
+
+  const entered = prompt("Admin-Code eingeben:");
+  if (entered === ADMIN_CODE) {
+    previewToggle.checked = true;
+    renderCalendar(); // neu zeichnen, jetzt ohne Locks
+    alert("Testmodus ist jetzt aktiv. Alle Türen sind offen.");
+  } else if (entered !== null) {
+    // nur meckern, wenn sie nicht auf Abbrechen gedrückt hat
+    alert("Falscher Code.");
+  }
+}
+window.enableTestMode = enableTestMode;
+
+// Hilfsfunktion: ist Testmodus aktiv?
+function isTestMode() {
+  return previewToggle && previewToggle.checked;
+}
+
+// Lock-Logik: Nur im Dezember & erst ab 00:00 des jeweiligen Tages
+function isLocked(day) {
+  if (isTestMode()) return false; // Testmodus: nie gesperrt
+
+  const now = new Date();
+  const currentMonth = now.getMonth(); // 0=Jan, 11=Dez
+  const currentDay = now.getDate();
+
+  // Außerhalb von Dezember: ALLES gesperrt
+  if (currentMonth !== 11) return true;
+
+  // In Dezember: Tage > aktueller Tag gesperrt
+  return day > currentDay;
+}
+
+// Lichterkette Farben - GIRLY
+const lightColors = ['#f9a8d4', '#fb7185', '#a855f7', '#facc15', '#fef3c7'];
+
+// Spezielle Inhalte pro Tür als HTML
+const doorContentHtml = {
+  1: `
+    <div class="door-content">
+      <p>Ich hab da mal ein kleines Mixtape für dich produziert 🎧💗</p>
+      <p>
+        <a href="https://on.soundcloud.com/5i18bBxZh3kpycsDME"
+           target="_blank"
+           class="door-link">
+           ➜ Hier klicken für dein Mixtape
+        </a>
+      </p>
+    </div>
+  `,
+  2: `
+    <div class="door-content">
+      <p>Ein Rätsel für dich 🧩</p>
+      <p>
+        <a href="https://www.xwords-generator.de/de/solve/zdtdq"
+           target="_blank" rel="noopener noreferrer">
+           Zum Kreuzworträtsel
+        </a>
+      </p>
+    </div>
+  `,
+  3: `
+    <div class="door-content">
+      <p>Du Granate💣</p>
+      <p>
+        <a href="Anika_Holtey_sexiest_Woman_Alive.png" download>
+          zum Download
+        </a>
+      </p>
+    </div>
+  `,
+  4: `
+    <div class="door-content">
+      <p style="margin: 20px 0; font-size: 1.4rem; font-weight: 800;">
+          DATENIGHT 💘
+      </p>
+      <p>Trash-Abend bei mir 🥂📺</p>
+      <p>Heute gibt’s Secco, „Make Love Fake Love“ & Trash-Bingo</p>
+    </div>
+  `,
+  5: `
+    <div class="door-content">
+      <p>Noch ein Mixtape nur für dich, jetzt auf deutsch 🎄💛</p>
+      <p>
+        <a href="https://on.soundcloud.com/bORSLGsO00A39PYkaV"
+           target="_blank"
+           class="door-link">
+           ➜ Hier klicken & Deutsch-Mixtape hören
+        </a>
+      </p>
+    </div>
+  `,
+  6: `
+    <div class="door-content">
+      <p>Happy Nikolaus 🔥🎅</p>
+      <p>
+        <a href="Ho-Ho-Hottie.pdf" download>
+          Ho-Ho-Hottie öffnen (PDF)
+        </a>
+      </p>
+    </div>
+  `,
+  7: `
+    <div class="door-content">
+      <p><strong>Selfcare-Haustier für dich</strong></p>
+      <p>
+        Hol dir die Finch-App und lass uns so richtig krasse Routine Queens werden.
+      </p>
+      <p>
+        <a href="https://www.finchcare.com" target="_blank" rel="noopener noreferrer">
+          Finch App entdecken
+        </a>
+      </p>
+    </div>
+  `,
+  8: `
+    <div class="door-content">
+      <p>Dein eigener Regenwald 🌳</p>
+      <p>
+        <a href="Urkunde_Regenwald.pdf" download>
+          Regenwald-Urkunde öffnen (PDF)
+        </a>
+      </p>
+    </div>
+  `,
+  9: `
+    <div class="door-content">
+      <p>Ich schick dich zum Mond 🌙</p>
+      <p>
+        <a href="Boarding-pass.jpg" download>
+          Boarding Pass downloaden
+        </a>
+      </p>
+    </div>
+  `,
+  10: `
+    <div class="door-content">
+      <p><strong>Traummann Checkliste 💍</strong></p>
+      <p>
+        Heute beschreibst du deinen Traummann.
+        Schick mir die Datei – ich bewahre sie auf und vielleicht gehen wir sie ja an deiner Hochzeit durch.
+      </p>
+      <p>
+        <a href="Traummann_Checkliste.pdf" download>
+          Traummann_Checkliste herunterladen (PDF)
+        </a>
+      </p>
+    </div>
+  `,
+  11: `
+    <div class="door-content">
+      <p>Tippe auf den Stern und wünsch dir was ✨</p>
+      <p>
+        <button class="shooting-trigger" type="button" onclick="triggerShootingStar()">
+          <span>⭐</span> Wünsch dir was
+        </button>
+      </p>
+    </div>
+  `,
+  12: `
+    <div class="door-content">
+      <p>Deine eigenen Bäume 🌱</p>
+      <p>
+        <a href="Urkunde_Baeume.pdf" download>
+          Baum-Urkunde öffnen (PDF)
+        </a>
+      </p>
+    </div>
+  `,
+  13: `
+    <div class="door-content">
+      <p>Deine Wiese für Tiere 🌾</p>
+      <p>
+        <a href="projektspende_Wiese.pdf" download>
+          Spendenbestätigung öffnen (PDF)
+        </a>
+      </p>
+    </div>
+  `,
+  14: `
+    <div class="door-content">
+      <p>Schreib einen Brief an dein zukünftiges Ich ✍️</p>
+      <p>
+        <a href="https://www.futureme.org" target="_blank" rel="noopener noreferrer">
+          FutureMe öffnen
+        </a>
+      </p>
+    </div>
+  `,
+  15: `
+    <div class="door-content">
+      <p><strong>Affirmationen mal anders 🔥🎧</strong></p>
+      <p>Höre sie für einen guten Start in den Tag.</p>
+      <p>
+        <a href="Anis_Affirmationen.mp3" download>
+          🎧 Anis Affirmationen anhören / herunterladen
+        </a>
+      </p>
+    </div>
+  `,
+  16: `
+    <div class="door-content">
+      <p>Kennst du schon dieses Buch? 🧠✨</p>
+      <p>
+        <a href="https://gemini.google.com/share/24cde9131239" target="_blank" rel="noopener noreferrer">
+          Zum Buch
+        </a>
+      </p>
+    </div>
+  `,
+  17: `
+    <div class="door-content">
+      <p><strong>Futterspende 🐶</strong></p>
+      <p>
+        Heute hast du einen Napf gefüllt und ein Herz ein bisschen voller gemacht.
+      </p>
+      <p>
+        <a href="Futterspenden_feed_a_dog.pdf" download>
+          Futterspende öffnen (PDF)
+        </a>
+      </p>
+    </div>
+  `,
+  18: `
+    <div class="door-content">
+      <p style="margin: 20px 0; font-size: 1.4rem; font-weight: 800;">
+        DATENIGHT 💘
+      </p>
+      <p>Hast du Zeit? Heute machen wir gemeinsam unsere Wünsche für die Rauhnächte.</p>
+    </div>
+  `,
+  19: `
+    <div class="door-content">
+      <p>Dein Stück MaForest 🌲</p>
+      <p>
+        <a href="Urkunde_MaForest.pdf" download>
+          MaForest-Urkunde öffnen (PDF)
+        </a>
+      </p>
+    </div>
+  `,
+  20: `
+    <div class="door-content">
+      <p>Unsere Freundschaft ist stabiler als manche Ehen 🤝</p>
+      <p>
+        <a href="Unsere_Freundschaft_stabiler_wie_manche_Ehen.m4a" download>
+          🎧 Podcast herunterladen (m4a)
+        </a>
+      </p>
+    </div>
+  `,
+  21: `
+    <div class="door-content">
+      <p>Weil du die Welt besser machst 💌</p>
+      <p>
+        <a href="Spenden_Urkunde.pdf" download>
+          Spenden-Urkunde öffnen (PDF)
+        </a>
+      </p>
+    </div>
+  `,
+  22: `
+    <div class="door-content">
+      <p style="margin: 20px 0; font-size: 1.4rem; font-weight: 800;">
+        DATENIGHT 💘
+      </p>
+      <p>Lass uns einen Tag ausmachen &amp; Visionboards für 2026 basteln.</p>
+    </div>
+  `,
+  23: `
+    <div class="door-content">
+      <p>2026 – mit Otto 🐶</p>
+      <p>
+        <a href="2026MitOtto.pdf" download>
+          2026-mit-Otto-Kalender öffnen (PDF)
+        </a>
+      </p>
+    </div>
+  `,
+  24: `
+    <div class="door-content">
+      <p>Frohe Weihnachten, mein Lieblingsmensch 🎄❤️</p>
+      <p>
+        <a href="UrkundeNamenspatenschaftDelphine.jpg" download>
+          Patenschafts-Urkunde herunterladen (JPG)
+        </a>
+      </p>
+    </div>
+  `
+};
+
+function renderCalendar() {
+  calendarEl.innerHTML = '';
+
+  const openedDoors = getOpenedDoors();
+
+  for (let i = 1; i <= 24; i++) {
+    const locked = isLocked(i);
+    const drawingKey = drawingKeys[i % drawingKeys.length];
+    const svgPath = drawings[drawingKey];
+    const colorVariant = i % 5;
+
+    const doorWrapper = document.createElement('div');
+    doorWrapper.className = `door-wrapper ${locked ? 'locked' : ''}`;
+    doorWrapper.dataset.day = i;
+
+    // NEU: Nur nicht-gesperrte Tage dürfen als "geöffnet" gerendert werden
+    if (!locked && openedDoors.includes(i)) {
+      doorWrapper.classList.add('opened');
+    }
+
+    let lightsHtml = '<div class="wire"></div>';
+    for (let l = 0; l < 5; l++) {
+      const color = lightColors[Math.floor(Math.random() * lightColors.length)];
+      lightsHtml += `<div class="light" style="color:${color};"></div>`;
+    }
+
+    // Inhalt je Tür
+    let innerContent = doorContentHtml[i];
+    if (!innerContent) {
+      const text = doorFallback[i] || "Eine kleine Überraschung ✨";
+      innerContent = `
+        <div class="door-content">
+          <p>${text}</p>
+        </div>
+      `;
+    }
+
+    doorWrapper.innerHTML = `
+      <div class="garland"></div>
+      <div class="mistletoe">
+        <div class="mist-leaf l"></div>
+        <div class="mist-leaf r"></div>
+        <div class="mist-berry"></div>
+      </div>
+
+      <div class="fairy-lights">${lightsHtml}</div>
+
+      <div class="door-content-wrapper">
+        ${innerContent}
+      </div>
+      
+      <div class="door-leaf door-variant-${colorVariant}">
+        <svg class="door-drawing" viewBox="0 0 100 100">
+          <path d="${svgPath}" />
+        </svg>
+        <div class="number-tag">${i}</div>
+        <div class="knob"></div>
+      </div>
+    `;
+
+    doorWrapper.addEventListener('click', () => {
+      const day = parseInt(doorWrapper.dataset.day, 10);
+
+      if (isLocked(day)) {
+        doorWrapper.classList.add('shaking');
+        setTimeout(() => doorWrapper.classList.remove('shaking'), 500);
+      } else {
+        doorWrapper.classList.toggle('opened');
+
+        // Öffnung speichern (nur im normalen Modus)
+        if (doorWrapper.classList.contains('opened')) {
+          saveDoorState(day);
+        }
+
+        // Brief-Overlay nur beim ersten Öffnen von Tür 1 zeigen
+        if (day === 1 && doorWrapper.classList.contains('opened')) {
+          showLetterOverlay();
+        }
+      }
+    });
+
+    calendarEl.appendChild(doorWrapper);
+  }
+}
+
+// Schneemänner
+function spawnWalker(delay = 0) {
+  const container = document.getElementById('animation-layer');
+  const walker = document.createElement('div');
+  walker.className = 'walker';
+  walker.style.animation = `walk-across 18s linear forwards ${delay}s`; 
+  
+  const msg = compliments[Math.floor(Math.random() * compliments.length)];
+
+  walker.innerHTML = `
+    <div class="snowman-speech">${msg}</div>
+    <div class="s-shadow"></div>
+    <div class="s-body-btm"></div>
+    <div class="s-body-mid"></div>
+    <div class="s-body-top">
+      <div class="s-eye l"></div>
+      <div class="s-eye r"></div>
+      <div class="s-nose"></div>
+    </div>
+    <div class="s-scarf"></div>
+    <div class="s-scarf-end"></div>
+    <div class="s-hat-band"></div>
+    <div class="s-hat-top"></div>
+    <div class="s-arm l"></div>
+    <div class="s-arm r">
+      <div class="beer-mug">
+        <div class="beer-liquid"></div>
+        <div class="beer-foam"></div>
+        <div class="beer-handle"></div>
+      </div>
+    </div>
+  `;
+  
+  walker.onclick = function() {
+    walker.classList.toggle('talking');
+    const currentAnim = window.getComputedStyle(walker).animationPlayState;
+    walker.style.animationPlayState = currentAnim === 'running' ? 'paused' : 'running';
+    
+    setTimeout(() => {
+      walker.classList.remove('talking');
+      walker.style.animationPlayState = 'running';
+    }, 4000);
+  };
+
+  container.appendChild(walker);
+  setTimeout(() => walker.remove(), 18000 + (delay * 1000));
+}
+
+function startWalkers() {
+  spawnWalker(0); 
+  spawnWalker(2); 
+}
+
+// Sternschnuppen-Funktion
+function triggerShootingStar() {
+  const star = document.getElementById('shootingStar');
+  if (!star) return;
+  star.classList.remove('active');
+  void star.offsetWidth; // reflow
+  star.classList.add('active');
+}
+window.triggerShootingStar = triggerShootingStar;
+
+// Brief-Overlay Steuerung
+let letterShown = false;
+function showLetterOverlay() {
+  if (letterShown) return;
+  letterShown = true;
+  const overlay = document.getElementById('letterOverlay');
+  if (overlay) overlay.classList.add('active');
+}
+function closeLetterOverlay() {
+  const overlay = document.getElementById('letterOverlay');
+  if (overlay) overlay.classList.remove('active');
+}
+window.closeLetterOverlay = closeLetterOverlay;
+
+// ===== REALISTISCHER SCHNEE (CANVAS) – DESKTOP + HANDY =====
+const snowCanvas = document.getElementById('snowCanvas');
+const ctx = snowCanvas.getContext('2d');
+
+let flakes = [];
+let width = 0;
+let height = 0;
+let dpr = window.devicePixelRatio || 1;
+
+function resizeSnowCanvas() {
+  width = window.innerWidth;
+  height = window.innerHeight;
+  snowCanvas.style.width = width + 'px';
+  snowCanvas.style.height = height + 'px';
+  snowCanvas.width = width * dpr;
+  snowCanvas.height = height * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+
+function createFlakes() {
+  flakes = [];
+  const baseCount = width < 600 ? 120 : 220;
+  for (let i = 0; i < baseCount; i++) {
+    flakes.push({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      r: 1 + Math.random() * 3.5,
+      speedY: 0.6 + Math.random() * 1.6,
+      swing: Math.random() * 1.3,
+      phase: Math.random() * Math.PI * 2
+    });
+  }
+}
+
+function updateSnow() {
+  ctx.clearRect(0, 0, width, height);
+  
+  const time = Date.now() * 0.001;
+
+  for (let flake of flakes) {
+    flake.y += flake.speedY;
+    flake.x += Math.sin(time + flake.phase) * flake.swing * 0.3;
+
+    if (flake.y > height + 10) {
+      flake.y = -10;
+      flake.x = Math.random() * width;
+    }
+    if (flake.x > width + 10) flake.x = -10;
+    if (flake.x < -10) flake.x = width + 10;
+
+    const gradient = ctx.createRadialGradient(
+      flake.x, flake.y, 0,
+      flake.x, flake.y, flake.r
+    );
+    gradient.addColorStop(0, 'rgba(255,255,255,1)');
+    gradient.addColorStop(1, 'rgba(255,255,255,0)');
+
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(flake.x, flake.y, flake.r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  requestAnimationFrame(updateSnow);
+}
+
+function initSnow() {
+  resizeSnowCanvas();
+  createFlakes();
+  updateSnow();
+}
+
+window.addEventListener('resize', () => {
+  resizeSnowCanvas();
+  createFlakes();
+});
+
+// Initialisierung
+renderCalendar();
+initSnow();
+if (previewToggle) {
+  previewToggle.addEventListener('change', renderCalendar);
+}
+setTimeout(startWalkers, 1000); 
+setInterval(startWalkers, 22000); 
+</script>
+
+</body>
+</html>
