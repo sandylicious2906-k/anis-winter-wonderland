@@ -168,9 +168,13 @@ export const register: Register = on => {
   })
 
   // ---------- Spar-Modus ----------
+  // Die Regeln reisen auch mit jeder Nachricht mit: wo ein anderes Plugin den
+  // Systemprompt schützt, kommen sie so trotzdem an.
   on('prompt.submit', async ($, e, next) => {
     lastPrompt = e.text
-    return next(e)
+    if (e.command) return next(e)
+    const rules = `[Girly-Prompts-Paket]\n${compose(await read($, birthdays))}`
+    return next({ ...e, context: [...(e.context ?? []), rules] })
   })
 
   on('turn.step', async function* ($, e, next) {
