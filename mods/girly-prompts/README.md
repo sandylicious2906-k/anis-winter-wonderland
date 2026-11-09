@@ -1,11 +1,17 @@
-# 🎀 Girly Prompts – Claude Mod
+# 🎀 Girly Prompts – Sandys Claude-Paket
 
-Sandys persönliches Dashboard für @sandy_girlyprompts, als Seitenleiste direkt neben dem Claude-Chat.
+Persönliche Erweiterung („Mod“) für Claude Code, gebaut für @sandy_girlyprompts.
 
-- **Ideen-Board:** jede Videoidee wandert per Klick durch 💡 Idee → ✍️ Skript → 🎬 Gedreht → 🚦 Gecheckt → ✅ Gepostet. Bleibt über Sitzungen hinweg gespeichert.
-- **Heute posten?** zeigt, ob heute schon ein Video raus ist (Regel: max. eins pro Tag, 18–20 Uhr).
-- **Vor dem Upload:** die wichtigsten Punkte aus dem Girly-Prompts-Check als Spickzettel.
+**Was es macht**
+- **Erklär's mir einfach:** Claude antwortet immer auf Deutsch, kurz und ohne Fachwörter, Schritt für Schritt.
+- **Dashboard neben dem Chat** mit Tabs: 💡 Ideen (Idee → Skript → Gedreht → Gecheckt → Gepostet), 🔐 Prompt-Tresor (mit Kopieren-Knopf), 📊 Zahlen-Tagebuch (welches Format am besten läuft), 🎂 Geburtstage, ✨ Mehr (Einstellungen + Upload-Spickzettel).
+- **Video-Ampel:** Nach dem Girly-Prompts-Check steht 🟢/🟡/🔴 mit höchstens 3 Fixes über dem Eingabefeld.
+- **Spoiler-Schutz:** Claude warnt, wenn ein Video ein Geschenk vor dem Geburtstag verraten würde.
+- **Privat-Wächter:** hält Veröffentlichungen an, in denen E-Mail-Adressen oder Handynummern stehen.
+- **Spar-Modus:** Tippfehler, Übersetzen, Formatieren laufen über das günstige Modell.
+- **Posting-Erinnerung** um 18 Uhr (solange Claude offen ist).
 
-Befehle: `/girly` öffnet das Dashboard, `/idee <Text>` speichert eine neue Idee.
+**Kurzbefehle:** `/hilfe`, `/girly`, `/idee`, `/prompt`, `/check`, `/hook`, `/caption`, `/antwort`, `/geschenk`, `/geburtstag`.
+Man muss sie nicht benutzen: Claude trägt Ideen, Prompts, Zahlen und Geburtstage auch selbst ein, wenn man davon erzählt.
 
-Installieren in Claude Code: `claude --plugin-dir mods/girly-prompts` oder den Ordner in den Mods-Ordner kopieren.
+Laden: `claude --plugin-dir mods/girly-prompts`
